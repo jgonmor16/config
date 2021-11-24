@@ -1,0 +1,4 @@
+nvim/.*
+nvim/*.old
+nvim/colors/
+nvim/plugin/
