@@ -12,6 +12,6 @@ require("plugins")              -- Plugins
 require("option")               -- Options
 require("setup")                -- Setup
 require("mapping")              -- Keybindings
-require("lsp-config")           -- LSP configuration
-require("cmp-config")           -- cmp configuration
-require("treesitter-config")    -- Treesitter configuration
+require("lsp")                  -- LSP configuration
+require("completion")           -- cmp configuration
+require("treesitter")           -- Treesitter configuration
