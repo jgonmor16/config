@@ -29,7 +29,6 @@ return require("packer").startup(function()
     use "hrsh7th/cmp-nvim-lsp"      -- LSP
     use "saadparwaiz1/cmp_luasnip"  -- luasnip
     use "onsails/lspkind-nvim"      -- Cool icons
-    --use "dense-analysis/ale"
 
     -- Treesitter
     use {
