@@ -40,4 +40,7 @@ return require("packer").startup(function()
     -- Snip
     --use ""
 
+    -- Comments
+    use "numToStr/Comment.nvim"
+
 end)

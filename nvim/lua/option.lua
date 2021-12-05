@@ -76,7 +76,7 @@ cmd([[autocmd FileType lua :setlocal softtabstop=4]])
 
 -- Airline Conf --
 
--- Disable automatic folding 
+-- Disable automatic folding
 --opt.nofoldenable = true
 
 -- Airlinetheme theme

@@ -15,3 +15,5 @@ require("mapping")              -- Keybindings
 require("lsp")                  -- LSP configuration
 require("completion")           -- cmp configuration
 require("treesitter")           -- Treesitter configuration
+require("comment")              -- Comment configuration
+
