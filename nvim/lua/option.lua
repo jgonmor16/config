@@ -71,6 +71,10 @@ g.vhdl_indent_rhsassign = 0
 -- lua
 cmd([[autocmd FileType lua :setlocal shiftwidth=4]])
 cmd([[autocmd FileType lua :setlocal softtabstop=4]])
+-- javascript
+cmd([[autocmd FileType json :setlocal shiftwidth=2]])
+cmd([[autocmd FileType json :setlocal softtabstop=2]])
+
 
 -------------------------------------------------------------------------------
 
