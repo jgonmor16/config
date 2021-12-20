@@ -32,6 +32,7 @@ map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<leader>e", ":Lex 30<CR>", opts)
 map("n", "<leader>n", ":vnew<CR>", opts)
 map("n", "<leader>q", ":q<CR>", opts)
+map("n", "<leader>1", ":q!<CR>", opts)
 map("n", "<leader>x", ":wq<CR>", opts)
 
 -- Move line mappings
