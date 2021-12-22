@@ -10,7 +10,6 @@ vim.cmd("colorscheme solarized")        -- Solarized colorscheme
 -- Require all the lua conf files
 require("plugins")              -- Plugins
 require("option")               -- Options
-require("setup")                -- Setup
 require("mapping")              -- Keybindings
 require("lsp")                  -- LSP configuration
 require("completion")           -- cmp configuration
