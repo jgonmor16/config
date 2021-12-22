@@ -77,7 +77,7 @@ return packer.startup(function(use)
     -- Comments
     use "numToStr/Comment.nvim"
 
-    -- Automatically set up config after clonign packer
+    -- Automatically set up config after cloning packer
     if PACKER_BOOTSTRAP then
         require("packer").sync()
     end
