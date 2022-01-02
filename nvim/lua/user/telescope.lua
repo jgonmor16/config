@@ -4,7 +4,6 @@
 
 local status_ok, telescope = pcall(require, "telescope")
 if not status_ok then
-    print("Bad")
     return
 end
 
@@ -14,8 +13,8 @@ telescope.setup {
 
     defaults = {
 
-        prompt_prefix = " ",
-        selection_caret = " ",
+        prompt_prefix = "> ",
+        selection_caret = "> ",
         path_display = { "smart" },
 
         -- Most are the default keybindings, but I want to specify all of them
