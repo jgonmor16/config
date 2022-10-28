@@ -12,6 +12,7 @@ local cmd = vim.cmd     -- vim command
 
 -- Enable dark background
 opt.background = 'dark'
+opt.termguicolors = true
 
 -- Allow mouse use
 opt.mouse = 'a'
@@ -41,7 +42,7 @@ opt.scrolloff = 3
 
 -- Automatically wrap lines longer than 79 characters, except for git
 -- commits, that must be only 71
-opt.tw = 79
+--opt.tw = 79
 cmd([[autocmd FileType gitcommit :setlocal tw=71]])
 
 -- Show trailing whitepace and spaces before a tab
@@ -74,36 +75,21 @@ cmd([[autocmd FileType lua :setlocal softtabstop=4]])
 -- javascript
 cmd([[autocmd FileType json :setlocal shiftwidth=2]])
 cmd([[autocmd FileType json :setlocal softtabstop=2]])
+-- c
+cmd([[autocmd FileType c :setlocal shiftwidth=4]])
+cmd([[autocmd FileType c :setlocal softtabstop=4]])
+-- cpp
+cmd([[autocmd FileType cpp :setlocal shiftwidth=4]])
+cmd([[autocmd FileType cpp :setlocal softtabstop=4]])
 
-
--------------------------------------------------------------------------------
-
--- Airline Conf --
-
--- Disable automatic folding
---opt.nofoldenable = true
-
--- Airlinetheme theme
-g.airline_solarized_bg = 'dark'
-
--- Powerline font
-g.airline_powerline_fonts = 1
-cmd([[
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-]])
-
--- Airline symbols
-g.airline_left_sep = ''
-g.airline_left_alt_sep = ''
-g.airline_right_sep = ''
-g.airline_right_alt_sep = ''
-g.airline_symbols.branch = ''
-g.airline_symbols.readonly = ''
-g.airline_symbols.linenr = ''
-
---cmd([[set guifont=Source_Code_Pro_Light:h15:cANSI]])
+-- Enable highlighting all the matches in incsearch mode
+-- But don't enable hlsearch always
+--cmd([[augroup vimrc-incsearch-highlight
+--  autocmd!
+--  autocmd CmdlineEnter [/\?] :set nohhlsearch
+--  autocmd CmdlineLeave [/\?] :set lsearch
+--augroup END
+--]])
 
 -------------------------------------------------------------------------------
 
