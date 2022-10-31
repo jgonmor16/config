@@ -34,7 +34,8 @@ cmp.setup {
         { name = "nvim_lsp" },
         { name = "path" },
         { name = "luasnip" },
-        { name = "buffer", keyword_length = 5 },
+        { name = "orgmode"},
+        { name = "buffer", keyword_length = 3 },
         --{ name = "gh_issues" },
         -- Config options:
             -- keyword_length
