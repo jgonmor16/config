@@ -58,9 +58,20 @@ return packer.startup(function(use)
     -- An implementation of the Popup API from vim in Neovim
     use "nvim-lua/popup.nvim"
 
-    -- Airline (theme)
-    use "vim-airline/vim-airline"
-    use "vim-airline/vim-airline-themes"
+    -- Status line (Lualine) and solarized colorsheme
+    use {
+        "nvim-lualine/lualine.nvim",
+        requires = {
+            "kyazdani42/nvim-web-devicons",
+            opt = true
+        }
+    }
+    use {
+        "svrana/neosolarized.nvim",
+        requires = {
+            "tjdevries/colorbuddy.nvim"
+        }
+    }
 
     -- Completion and LSP
     use "neovim/nvim-lspconfig"             -- LSP
@@ -88,6 +99,22 @@ return packer.startup(function(use)
     -- Telescope
     use "nvim-telescope/telescope.nvim"
         -- requires = { {"nvim-lua/plenary.nvim"} }
+
+    -- Neorg
+    use {
+        "nvim-neorg/neorg",
+        tag = "*",                          -- Latest Stable Version
+        run = ":Neorg sync-parsers",
+        requires = "nvim-lua/plenary.nvim"
+    }
+
+    -- -- Better-Scape
+    -- use {
+    --     "jdhao/better-escape.vim",
+    --     event = "InsertEnter"
+    -- }
+
+    --use "jose-elias-alvarez/nvim-lsp-ts-utils"
 
     -- Automatically set up config after cloning packer
     if PACKER_BOOTSTRAP then
