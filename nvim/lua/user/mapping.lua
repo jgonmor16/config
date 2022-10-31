@@ -13,11 +13,6 @@ local g = vim.g
 -- Common options
 local opts = {noremap = true, silent = true}
 
--- Remap space as leader key
-map("", "<Space>", "<Nop>", opts)
-g.mapleader = " "
-
-
 -- Keybindings
 -- map("<mode>", "<key>", "<KeyCombToExpand>", opts)
 
@@ -49,6 +44,9 @@ map("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 map("n", "<S-l>", ":bnext<CR>", opts)
 map("n", "<S-h>", ":bprevious<CR>", opts)
 
+-- Stop hightights after search
+map("n", "<leader>o", ":noh<CR>", opts)
+
 -- INSERT --
 map("i", "jk", "<ESC>", opts)
 
@@ -62,4 +60,7 @@ map("v", ">", ">gv", opts)
 map("n", "<leader>f", "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<cr>", opts)
 map("n", "<c-t>", "<cmd>Telescope live_grep<cr>", opts)
 
+-- Hightights
+-- Stop them after search (when pressing <ESC>)
+map("n", "<ESC>", ":noh<CR><ESC>",opts)
 
