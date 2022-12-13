@@ -13,16 +13,32 @@ neorg.setup({
         -- All default modules
         ["core.defaults"] = {},
         -- Icons stuff
-        ["core.norg.concealer"] = {},
-        -- ["core.gtd.base"] = {},
+        ["core.norg.concealer"] = {
+            config = {
+                fold = false,
+            }
+        },
+        -- Completion Engine
+        ["core.norg.completion"] = {
+            config = {
+                engine = "nvim-cmp"
+            }
+        },
         ["core.norg.qol.toc"] = {},
         ["core.norg.dirman"] = {
             config = {
                 workspaces = {
                     work = "~/notes/work",
+                    gtd = "~/todo",
                 }
             }
-        }
+        },
+        -- Get Things Done
+        ["core.gtd.base"] = {
+            config = {
+                workspace = "gtd",
+            }
+        },
     }
 })
 

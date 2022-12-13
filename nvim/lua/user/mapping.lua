@@ -62,5 +62,9 @@ map("n", "<c-t>", "<cmd>Telescope live_grep<cr>", opts)
 
 -- Hightights
 -- Stop them after search (when pressing <ESC>)
-map("n", "<ESC>", ":noh<CR><ESC>",opts)
+map("n", "<ESC>", ":noh<CR><ESC>", opts)
 
+-- NEORG
+map("n", "gtv", ":Neorg gtd views<CR>", opts)
+map("n", "gtc", ":Neorg gtd capture<CR>", opts)
+map("n", "gte", ":Neorg gtd edit<CR>", opts)
