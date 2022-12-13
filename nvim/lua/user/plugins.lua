@@ -108,13 +108,27 @@ return packer.startup(function(use)
         requires = "nvim-lua/plenary.nvim"
     }
 
-    -- -- Better-Scape
+    -- Better-Scape
     -- use {
     --     "jdhao/better-escape.vim",
     --     event = "InsertEnter"
     -- }
 
     --use "jose-elias-alvarez/nvim-lsp-ts-utils"
+
+    -- Markdown
+    use {
+        "iamcco/markdown-preview.nvim",
+        run = function() vim.fn["mkdp#util#install"]() end,
+    }
+
+    -- Git
+    use {
+        "lewis6991/gitsigns.nvim",
+        config = function()
+            require('gitsigns').setup()
+        end
+    }
 
     -- Automatically set up config after cloning packer
     if PACKER_BOOTSTRAP then
