@@ -1,14 +1,22 @@
----------------------------
--- Options configuration --
----------------------------
-
+-------------------------------------------------------------------------------
+-- Configure options
 -------------------------------------------------------------------------------
 
+---------------------
+-- Handy variables --
+---------------------
 local g = vim.g         -- global variable
 local opt = vim.opt     -- set options
 local cmd = vim.cmd     -- vim command
 
--------------------------------------------------------------------------------
+----------------
+-- Theme Conf --
+----------------
+if vim.g.neovide then
+  vim.g.neovide_cursor_trail_legnth = 0
+  vim.g.neovide_cursor_animation_length = 0
+  vim.o.guifont = 'Jetbrains Mono'
+end
 
 -- Enable dark background
 opt.background = 'dark'
@@ -70,8 +78,8 @@ cmd([[autocmd FileType vhdl :setlocal softtabstop=2]])
 g.vhdl_indent_genportmap = 0
 g.vhdl_indent_rhsassign = 0
 -- lua
-cmd([[autocmd FileType lua :setlocal shiftwidth=4]])
-cmd([[autocmd FileType lua :setlocal softtabstop=4]])
+cmd([[autocmd FileType lua :setlocal shiftwidth=2]])
+cmd([[autocmd FileType lua :setlocal softtabstop=2]])
 -- javascript
 cmd([[autocmd FileType json :setlocal shiftwidth=2]])
 cmd([[autocmd FileType json :setlocal softtabstop=2]])
@@ -82,25 +90,16 @@ cmd([[autocmd FileType c :setlocal softtabstop=4]])
 cmd([[autocmd FileType cpp :setlocal shiftwidth=4]])
 cmd([[autocmd FileType cpp :setlocal softtabstop=4]])
 
--- Enable highlighting all the matches in incsearch mode
--- But don't enable hlsearch always
---cmd([[augroup vimrc-incsearch-highlight
---  autocmd!
---  autocmd CmdlineEnter [/\?] :set nohhlsearch
---  autocmd CmdlineLeave [/\?] :set lsearch
---augroup END
---]])
-
--------------------------------------------------------------------------------
-
+-----------------
 -- Python Conf --
+-----------------
 
 -- Figure out the system Python for Neovim.
 cmd([[
 if exists("$VIRTUAL_ENV")
-    let g:python3_host_prog=substitute(system("which -a python3 | head -n2 | tail -n1"), "\n", '', 'g')
+  let g:python3_host_prog=substitute(system("which -a python3 | head -n2 | tail -n1"), "\n", '', 'g')
 else
-    let g:python3_host_prog=substitute(system("which python3"), "\n", '', 'g')
+  let g:python3_host_prog=substitute(system("which python3"), "\n", '', 'g')
 endif
 ]])
 
