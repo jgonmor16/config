@@ -1,22 +1,36 @@
---------------
+-------------------------------------------------------------------------------
 -- Keybinds --
---------------
-
 -------------------------------------------------------------------------------
 
+---------------------
+-- Handy variables --
+---------------------
 local map = vim.api.nvim_set_keymap
 local cmd = vim.cmd
 local g = vim.g
 
--------------------------------------------------------------------------------
-
 -- Common options
 local opts = {noremap = true, silent = true}
 
--- Keybindings
+----------------
+-- Leader Key --
+----------------
+
+-- Remap space as leader key
+vim.api.nvim_set_keymap('', '<Space>', '<Nop>', opts)
+vim.g.mapleader = ' '
+
+-----------------
+-- KEYBINDINGS --
+-----------------
+
+-- Template
 -- map("<mode>", "<key>", "<KeyCombToExpand>", opts)
 
--- NORMAL --
+------------
+-- Normal --
+------------
+
 -- Window navigation
 map("n", "<C-h>", "<C-w>h", opts)
 --map("n", "<C-j>", "<C-w>j", opts)
@@ -44,27 +58,21 @@ map("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 map("n", "<S-l>", ":bnext<CR>", opts)
 map("n", "<S-h>", ":bprevious<CR>", opts)
 
--- Stop hightights after search
-map("n", "<leader>o", ":noh<CR>", opts)
+-- Stop hightights after search by pressing <ESC>
+map("n", "<ESC>", ":noh<CR><ESC>", opts)
 
--- INSERT --
+------------
+-- Insert --
+------------
+
+-- Cool scape shortout
 map("i", "jk", "<ESC>", opts)
 
--- VISUAL
--- Stay in indent mode
+------------
+-- Visual --
+------------
+
+-- Stay in indent mode while indenting a block
 map("v", "<", "<gv", opts)
 map("v", ">", ">gv", opts)
 
--- Telescope Mappings
--- keymap("n", "<leader>f", "<cmd>Telescope find_files<cr>", opts)
-map("n", "<leader>f", "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<cr>", opts)
-map("n", "<c-t>", "<cmd>Telescope live_grep<cr>", opts)
-
--- Hightights
--- Stop them after search (when pressing <ESC>)
-map("n", "<ESC>", ":noh<CR><ESC>", opts)
-
--- NEORG
-map("n", "gtv", ":Neorg gtd views<CR>", opts)
-map("n", "gtc", ":Neorg gtd capture<CR>", opts)
-map("n", "gte", ":Neorg gtd edit<CR>", opts)
