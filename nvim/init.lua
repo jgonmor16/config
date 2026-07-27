@@ -8,11 +8,20 @@ vim.o.expandtab = true
 vim.o.cursorline = true
 vim.o.colorcolumn = "80"
 vim.o.winborder = "rounded"
+vim.o.scrolloff = 3
 
 -- Solve +q4D73 known glitch
 local termfeatures = vim.g.termfeatures or {}
 termfeatures.osc52 = false
 vim.g.termfeatures = termfeatures
+
+-- Wrap git commit message bodies at 71 columns (the conventional Git limit)
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "gitcommit",
+    callback = function()
+        vim.opt_local.textwidth = 71
+    end,
+})
 
 vim.g.mapleader = " "
 
@@ -26,7 +35,7 @@ vim.pack.add({
 })
 
 require("mason").setup()
-vim.lsp.enable({ "lua_ls" })
+vim.lsp.enable({ "lua_ls", "basedpyright", "ruff" })
 
 -- Fix 'vim' global warning
 vim.lsp.config("lua_ls", {
@@ -53,3 +62,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 vim.lsp.completion.enable()
 vim.opt.completeopt:append("noselect")
+
+vim.keymap.set("i", "<C-j>", function()
+    return vim.fn.pumvisible() == 1 and "<C-n>" or "<C-j>"
+end, { expr = true, desc = "Completion: next" })
+
+vim.keymap.set("i", "<C-k>", function()
+    return vim.fn.pumvisible() == 1 and "<C-p>" or "<C-k>"
+end, { expr = true, desc = "Completion: previous" })
