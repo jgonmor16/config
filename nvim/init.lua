@@ -1,206 +1,142 @@
--------------------------------------------------------------------------------
--- init.lua --
--------------------------------------------------------------------------------
+---------------------------------------------------------------------------
+-- Options
+---------------------------------------------------------------------------
+vim.o.number = true
+vim.o.relativenumber = true
+vim.o.wrap = false
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.swapfile = false
+vim.o.expandtab = true
+vim.o.cursorline = true
+vim.o.colorcolumn = "80"
+vim.o.winborder = "rounded"
+vim.o.scrolloff = 3
+vim.o.clipboard = "unnamedplus"
 
----------------------
--- Handy variables --
----------------------
+-- Solve +q4D73 known glitch
+local termfeatures = vim.g.termfeatures or {}
+termfeatures.osc52 = false
+vim.g.termfeatures = termfeatures
 
--- Packer Plugins
-local fn = vim.fn
-local cmd = vim.cmd
-
-cmd('filetype plugin on')
-
---------------------
--- Packer Install --
---------------------
-
--- Check if packer is installed. Otherwise, install it
-local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
-local is_bootstrap = false
-
-if fn.empty(fn.glob(install_path)) > 0 then
-  is_bootstrap = true
-  fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
-  cmd [[packadd packer.nvim]]
-end
-
---------------------------
--- Packer Configuration --
---------------------------
-require('packer').startup(function(use)
-
-  -- Packer (can handle itself)
-  use 'wbthomason/packer.nvim'
-
-  -----------------------
-  -- LSP configuration --
-  -----------------------
-  use {
-    'neovim/nvim-lspconfig',
-    requires = {
-      -- Install LSPs to stdpath for neovim
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
-
-      -- Status updates for LSP
-      'j-hui/fidget.nvim',
-    },
-  }
-
-  --------------------
-  -- Autocompletion --
-  --------------------
-  use {
-    'hrsh7th/nvim-cmp',
-    requires = {
-      -- cmp-lsp
-      use 'hrsh7th/cmp-nvim-lsp',
-      -- Snippets
-      use 'L3MON4D3/LuaSnip',
-      use 'saadparwaiz1/cmp_luasnip',
-      -- Buffer and files
-      use 'hrsh7th/cmp-buffer',
-      use 'hrsh7th/cmp-path'
-    },
-  }
-  -- Cool icons for LSP
-  use 'onsails/lspkind-nvim'
-
-  -- Review
-  --use 'hrsh7th/cmp-nvim-lua'        -- Lua
-
-  ----------------
-  -- Treesitter --
-  ----------------
-  -- [INFO]: highlight, edit and navigate code
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    run = function()
-      pcall(require('nvim-treesitter.install').update { with_sync = true })
+-- Wrap git commit message bodies at column 71 (the conventional Git limit)
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "gitcommit",
+    callback = function()
+        vim.opt_local.textwidth = 71
     end,
-  }
-
-  -- Aditional text objects via treesitter
-  use {
-    'nvim-treesitter/nvim-treesitter-textobjects',
-    after = 'nvim-treesitter',
-  }
-
-  ---------
-  -- Git --
-  ---------
-  use 'lewis6991/gitsigns.nvim'
-
-  -- TODO: check this plugins
-  -- use 'tpope/vim-fugitive'
-  -- use 'tpope/vim-rhubarb'
-
-  ------------------------------------
-  -- Solarized theme and Statusline --
-  ------------------------------------
-  use {
-    'svrana/neosolarized.nvim',
-    requires = {
-      'tjdevries/colorbuddy.nvim'
-    }
-  }
-  use {
-    'nvim-lualine/lualine.nvim',
-    requires = {
-      'kyazdani42/nvim-web-devicons',
-      opt = true
-    }
-  }
-
-  -- Really cool plugin which automatically detects tabstop and shiftwidth
-  use 'tpope/vim-sleuth'
-
-  ---------------
-  -- Telescope --
-  ---------------
-  -- Fuzzy finder (files, lsp, etc)
-  use {
-    'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
-    requires = {
-      'nvim-lua/plenary.nvim'
-    },
-  }
-  -- Fuzzy Finder Algorithm which requires local dependencies to be built.
-  -- Only load if `make` is available
-  use {
-    'nvim-telescope/telescope-fzf-native.nvim',
-    run = 'make',
-    cond = fn.executable 'make' == 1
-  }
-
-  --------------
-  -- Comments --
-  --------------
-  use 'numToStr/Comment.nvim'
-
-  -- Add indentation guides even on blank lines
-  use 'lukas-reineke/indent-blankline.nvim'
-
-  -- Neorg
-  use {
-    'nvim-neorg/neorg',
-    tag = '*',              -- Latest Stable Version
-    run = ':Neorg sync-parsers',
-    requires = 'nvim-lua/plenary.nvim'
-  }
-
-
-  -- TODO: Review this
-  local has_plugins, plugins = pcall(require, 'custom.plugins')
-  if has_plugins then
-    plugins(use)
-  end
-
-  if is_bootstrap then
-    require('packer').sync()
-  end
-
-end)
-
--- When we are bootstrapping a configuration, it doesn't
--- make sense to execute the rest of the init.lua.
---
--- You'll need to restart nvim, and then it will work.
-if is_bootstrap then
-  print '=================================='
-  print '   Plugins are being installed'
-  print '   Wait until Packer completes,'
-  print '       then restart nvim'
-  print '=================================='
-  return
-end
-
--- Automatically source and re-compile packer whenever this file is saved
-local packer_group = vim.api.nvim_create_augroup('Packer', { clear = true })
-vim.api.nvim_create_autocmd('BufWritePost', {
-  command = 'source <afile> | PackerSync',
-  group = packer_group,
-  pattern = fn.expand '$MYVIMRC',
 })
 
-------------------------
--- Nvim Configuration --
-------------------------
+---------------------------------------------------------------------------
+-- Keymaps
+---------------------------------------------------------------------------
+vim.g.mapleader = " "
 
--- Disable builtin plugins I do not use
-require 'user.disable_buildtin'
--- Options
-require 'user.option'
--- Keybindings
-require 'user.mapping'
+vim.keymap.set('n', '<leader>o', function()
+    vim.cmd("update")
+    vim.cmd("source %")
+end, { desc = "Save & reload config" })
+vim.keymap.set('n', '<leader>w', ':write<CR>', { desc = "Save file" })
+vim.keymap.set('n', '<leader>x', ':x<CR>', { desc = "Save and close file" })
+vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format,
+    { desc = "Format buffer via LSP" })
 
----------------------------
--- Plugins Configuration --
----------------------------
+---------------------------------------------------------------------------
+-- Plugins
+---------------------------------------------------------------------------
+vim.pack.add({
+    { src = "https://github.com/neovim/nvim-lspconfig" },
+    { src = "https://github.com/mason-org/mason.nvim" },
+    { src = "https://github.com/maxmx03/solarized.nvim" },
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter",
+      version = "main" },
+})
 
--- Configure plugins added above
-require 'user.plugins'
+---------------------------------------------------------------------------
+-- Solarized Theme
+---------------------------------------------------------------------------
+vim.o.termguicolors = true
+vim.o.background = "dark"
 
+require("solarized").setup({})
+vim.cmd.colorscheme("solarized")
+
+---------------------------------------------------------------------------
+-- Treesitter
+---------------------------------------------------------------------------
+require("nvim-treesitter").install({
+    "lua",
+    "vim",
+    "vimdoc",
+    "markdown",
+    "bash",
+    "python",
+    "yaml",
+    "toml",
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    callback = function()
+        pcall(vim.treesitter.start)
+    end,
+})
+
+---------------------------------------------------------------------------
+-- LSP
+---------------------------------------------------------------------------
+require("mason").setup()
+local mason_registry = require("mason-registry")
+local ensure_installed = {
+    "basedpyright",
+    "lua-language-server",
+    "ruff",
+    "taplo",
+    "tree-sitter-cli",
+    "yaml-language-server",
+}
+
+mason_registry.refresh(function()
+    for _, name in ipairs(ensure_installed) do
+        local ok, pkg = pcall(mason_registry.get_package, name)
+        if ok and not pkg:is_installed() then
+            pkg:install()
+        end
+    end
+end)
+
+vim.lsp.enable(mason_registry)
+
+-- Fix 'vim' global warning
+vim.lsp.config("lua_ls", {
+    settings = {
+        Lua = {
+            workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+            }
+        }
+    }
+})
+
+---------------------------------------------------------------------------
+-- Completion
+---------------------------------------------------------------------------
+vim.api.nvim_create_autocmd('LspAttach', {
+    callback = function(ev)
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if client and client:supports_method('textDocument/completion') then
+            vim.lsp.completion.enable(true, client.id, ev.buf, {
+                autotrigger = true,
+            })
+        end
+    end,
+})
+
+vim.opt.completeopt:append("noselect")
+
+vim.keymap.set("i", "<C-j>", function()
+    return vim.fn.pumvisible() == 1 and "<C-n>" or "<C-j>"
+end, { expr = true, desc = "Completion: next" })
+
+vim.keymap.set("i", "<C-k>", function()
+    return vim.fn.pumvisible() == 1 and "<C-p>" or "<C-k>"
+end, { expr = true, desc = "Completion: previous" })
