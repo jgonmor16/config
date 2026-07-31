@@ -104,6 +104,7 @@ for _, server in ipairs(servers) do
     table.insert(lsp_names, server.lsp)
 end
 
+-- Ensure every tool above is actually installed.
 mason_registry.refresh(function()
     for _, name in ipairs(ensure_installed) do
         local ok, pkg = pcall(mason_registry.get_package, name)
@@ -129,18 +130,36 @@ vim.lsp.config("lua_ls", {
 ---------------------------------------------------------------------------
 -- Completion
 ---------------------------------------------------------------------------
+-- Point 'omnifunc' at the LSP client so its results can be merged with other
+-- sources below.
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(ev)
         local client = vim.lsp.get_client_by_id(ev.data.client_id)
         if client and client:supports_method('textDocument/completion') then
-            vim.lsp.completion.enable(true, client.id, ev.buf, {
-                autotrigger = true,
-            })
+            vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
         end
     end,
 })
 
-vim.opt.completeopt:append("noselect")
+vim.opt.complete:append("o")
+vim.opt.completeopt = { "menu", "menuone", "noinsert", "popup" }
+
+-- Only pop the menu up once you've typed at least 3 characters of the
+-- current word — avoids a menu after every single keystroke.
+vim.api.nvim_create_autocmd("TextChangedI", {
+    callback = function()
+        if vim.fn.pumvisible() == 1 then
+            return -- already open; typing further just narrows it natively
+        end
+        local col = vim.fn.col(".")
+        local before_cursor = vim.fn.getline("."):sub(1, col - 1)
+        local word = before_cursor:match("[%w_]+$") or ""
+        if #word >= 3 then
+            local keys = vim.api.nvim_replace_termcodes("<C-n>", true, false, true)
+            vim.api.nvim_feedkeys(keys, "n", false)
+        end
+    end,
+})
 
 vim.keymap.set("i", "<C-j>", function()
     return vim.fn.pumvisible() == 1 and "<C-n>" or "<C-j>"
