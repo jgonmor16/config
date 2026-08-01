@@ -128,6 +128,37 @@ vim.lsp.config("lua_ls", {
 })
 
 ---------------------------------------------------------------------------
+-- Diagnostic
+---------------------------------------------------------------------------
+local warnings_hidden = {}
+
+local function severity_filter(_, bufnr)
+    if warnings_hidden[bufnr] ~= false then
+        return { severity = vim.diagnostic.severity.ERROR }
+    end
+        return {} -- no filter: show every severity
+end
+
+vim.diagnostic.config({
+    severity_sort = true,
+    virtual_text = severity_filter,
+    signs = severity_filter,
+    underline = severity_filter,
+})
+
+vim.keymap.set("n", "<leader>lw", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local hidden = warnings_hidden[bufnr] ~= false
+    warnings_hidden[bufnr] = not hidden
+    vim.diagnostic.show(nil, bufnr) -- force an immediate redraw with the new state
+    vim.notify(
+        warnings_hidden[bufnr] and "Warnings hidden (errors only)" or "Warnings shown",
+        vim.log.levels.INFO
+    )
+end, { desc = "Toggle warning diagnostics (this buffer)" })
+
+
+---------------------------------------------------------------------------
 -- Completion
 ---------------------------------------------------------------------------
 -- Point 'omnifunc' at the LSP client so its results can be merged with other
@@ -144,10 +175,21 @@ vim.api.nvim_create_autocmd('LspAttach', {
 vim.opt.complete:append("o")
 vim.opt.completeopt = { "menu", "menuone", "noinsert", "popup" }
 
+local just_completed = false
+vim.api.nvim_create_autocmd("CompleteDone", {
+    callback = function()
+        just_completed = true
+    end,
+})
+
 -- Only pop the menu up once you've typed at least 3 characters of the
 -- current word — avoids a menu after every single keystroke.
 vim.api.nvim_create_autocmd("TextChangedI", {
     callback = function()
+        if just_completed then
+            just_completed = false
+            return
+        end
         if vim.fn.pumvisible() == 1 then
             return -- already open; typing further just narrows it natively
         end
