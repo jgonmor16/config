@@ -6,18 +6,27 @@ vim.o.relativenumber = true
 vim.o.wrap = false
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
-vim.o.swapfile = false
 vim.o.expandtab = true
 vim.o.cursorline = true
 vim.o.colorcolumn = "80"
 vim.o.winborder = "rounded"
 vim.o.scrolloff = 3
 vim.o.clipboard = "unnamedplus"
+vim.o.signcolumn = "yes"
+vim.o.ignorecase = true
+vim.o.smartcase = true
 
 -- Solve +q4D73 known glitch
 local termfeatures = vim.g.termfeatures or {}
 termfeatures.osc52 = false
 vim.g.termfeatures = termfeatures
+
+-- Briefly highlight yanked text (built in since 0.11 as vim.hl.on_yank)
+vim.api.nvim_create_autocmd("TextYankPost", {
+    callback = function()
+        vim.hl.on_yank()
+    end,
+})
 
 -- Wrap git commit message bodies at column 71 (the conventional Git limit)
 vim.api.nvim_create_autocmd("FileType", {
@@ -36,10 +45,15 @@ vim.keymap.set('n', '<leader>o', function()
     vim.cmd("update")
     vim.cmd("source %")
 end, { desc = "Save & reload config" })
-vim.keymap.set('n', '<leader>w', ':write<CR>', { desc = "Save file" })
-vim.keymap.set('n', '<leader>x', ':x<CR>', { desc = "Save and close file" })
+vim.keymap.set('n', '<leader>w', '<cmd>write<CR>', { desc = "Save file" })
+vim.keymap.set('n', '<leader>x', '<cmd>x<CR>', { desc = "Save and close file" })
 vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format,
     { desc = "Format buffer via LSP" })
+
+-- Re-indent without losing the visual selection: `gv` reselects the last
+-- visual area, so you can press < / > repeatedly to keep shifting.
+vim.keymap.set('v', '<', '<gv', { desc = "Indent left, keep selection" })
+vim.keymap.set('v', '>', '>gv', { desc = "Indent right, keep selection" })
 
 ---------------------------------------------------------------------------
 -- Plugins
@@ -48,8 +62,10 @@ vim.pack.add({
     { src = "https://github.com/neovim/nvim-lspconfig" },
     { src = "https://github.com/mason-org/mason.nvim" },
     { src = "https://github.com/maxmx03/solarized.nvim" },
-    { src = "https://github.com/nvim-treesitter/nvim-treesitter",
-      version = "main" },
+    {
+        src = "https://github.com/nvim-treesitter/nvim-treesitter",
+        version = "main"
+    },
 })
 
 ---------------------------------------------------------------------------
@@ -89,10 +105,10 @@ local mason_registry = require("mason-registry")
 
 -- List of Mason and LSP servers
 local servers = {
-    { mason = "lua-language-server", lsp = "lua_ls" },
-    { mason = "basedpyright", lsp = "basedpyright" },
-    { mason = "ruff", lsp = "ruff" },
-    { mason = "taplo", lsp = "taplo" },
+    { mason = "lua-language-server",  lsp = "lua_ls" },
+    { mason = "basedpyright",         lsp = "basedpyright" },
+    { mason = "ruff",                 lsp = "ruff" },
+    { mason = "taplo",                lsp = "taplo" },
     { mason = "yaml-language-server", lsp = "yamlls" },
 }
 
@@ -114,8 +130,6 @@ mason_registry.refresh(function()
     end
 end)
 
-vim.lsp.enable(lsp_names)
-
 -- Fix 'vim' global warning
 vim.lsp.config("lua_ls", {
     settings = {
@@ -127,6 +141,8 @@ vim.lsp.config("lua_ls", {
     }
 })
 
+vim.lsp.enable(lsp_names)
+
 ---------------------------------------------------------------------------
 -- Diagnostic
 ---------------------------------------------------------------------------
@@ -136,8 +152,16 @@ local function severity_filter(_, bufnr)
     if warnings_hidden[bufnr] ~= false then
         return { severity = vim.diagnostic.severity.ERROR }
     end
-        return {} -- no filter: show every severity
+    return {} -- no filter: show every severity
 end
+
+-- Drop per-buffer state when the buffer goes away, so the table can't grow
+-- unbounded over a long session.
+vim.api.nvim_create_autocmd("BufDelete", {
+    callback = function(ev)
+        warnings_hidden[ev.buf] = nil
+    end,
+})
 
 vim.diagnostic.config({
     severity_sort = true,
