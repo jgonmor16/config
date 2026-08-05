@@ -198,34 +198,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 vim.opt.complete:append("o")
 vim.opt.completeopt = { "menu", "menuone", "noinsert", "popup" }
-
-local just_completed = false
-vim.api.nvim_create_autocmd("CompleteDone", {
-    callback = function()
-        just_completed = true
-    end,
-})
-
--- Only pop the menu up once you've typed at least 3 characters of the
--- current word — avoids a menu after every single keystroke.
-vim.api.nvim_create_autocmd("TextChangedI", {
-    callback = function()
-        if just_completed then
-            just_completed = false
-            return
-        end
-        if vim.fn.pumvisible() == 1 then
-            return -- already open; typing further just narrows it natively
-        end
-        local col = vim.fn.col(".")
-        local before_cursor = vim.fn.getline("."):sub(1, col - 1)
-        local word = before_cursor:match("[%w_]+$") or ""
-        if #word >= 3 then
-            local keys = vim.api.nvim_replace_termcodes("<C-n>", true, false, true)
-            vim.api.nvim_feedkeys(keys, "n", false)
-        end
-    end,
-})
+vim.o.autocomplete = true
 
 vim.keymap.set("i", "<C-j>", function()
     return vim.fn.pumvisible() == 1 and "<C-n>" or "<C-j>"
