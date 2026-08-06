@@ -14,7 +14,7 @@ vim.o.scrolloff = 3
 vim.o.clipboard = "unnamedplus"
 vim.o.signcolumn = "yes"
 vim.o.ignorecase = true
-vim.o.smartcase = true
+vim.o.mouse = "a"
 
 -- Solve +q4D73 known glitch
 local termfeatures = vim.g.termfeatures or {}
