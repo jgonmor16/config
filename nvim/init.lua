@@ -110,6 +110,8 @@ local servers = {
     { mason = "ruff",                 lsp = "ruff" },
     { mason = "taplo",                lsp = "taplo" },
     { mason = "yaml-language-server", lsp = "yamlls" },
+    { mason = "verible",              lsp = "verible" },
+    { mason = "rust_hdl",             lsp = "vhdl_ls" },
 }
 
 -- tree-sitter-clie is not a language server (no lspconfig entry)
