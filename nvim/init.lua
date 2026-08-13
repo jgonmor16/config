@@ -130,7 +130,57 @@ for _, server in ipairs(servers) do
     table.insert(lsp_names, server.lsp)
 end
 
--- Ensure every tool above is actually installed.
+-- Ensure every tool above is actually installed, and report when the
+-- background installs finish. get_package() raises on an unknown name and
+-- install() asserts when one is already running, so both are guarded.
+mason_registry.refresh(function()
+    local queue = {}
+
+    for _, name in ipairs(ensure_installed) do
+        if not mason_registry.has_package(name) then
+            vim.schedule(function()
+                vim.notify(("Mason: unknown package %q"):format(name),
+                    vim.log.levels.ERROR)
+            end)
+        else
+            local pkg = mason_registry.get_package(name)
+            if not pkg:is_installed() and not pkg:is_installing() then
+                table.insert(queue, pkg)
+            end
+        end
+    end
+
+    if #queue == 0 then
+        return
+    end
+
+    local remaining, failed = #queue, {}
+    for _, pkg in ipairs(queue) do
+        pkg:install(nil, function(success)
+            if not success then
+                table.insert(failed, pkg.name)
+            end
+
+            remaining = remaining - 1
+            if remaining > 0 then
+                return
+            end
+
+            vim.schedule(function()
+                if #failed == 0 then
+                    vim.notify(("Mason: installed %d tool(s)"):format(#queue),
+                        vim.log.levels.INFO)
+                else
+                    vim.notify(
+                        "Mason: install failed for " .. table.concat(failed, ", ")
+                        .. " (see :Mason)",
+                        vim.log.levels.WARN)
+                end
+            end)
+        end)
+    end
+end)
+
 mason_registry.refresh(function()
     for _, name in ipairs(ensure_installed) do
         local ok, pkg = pcall(mason_registry.get_package, name)
