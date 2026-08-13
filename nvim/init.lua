@@ -23,6 +23,8 @@ vim.g.termfeatures = termfeatures
 
 -- Briefly highlight yanked text (built in since 0.11 as vim.hl.on_yank)
 vim.api.nvim_create_autocmd("TextYankPost", {
+    group = vim.api.nvim_create_augroup("user.yank", { clear = true }),
+    desc = "Briefly highlight yanked text",
     callback = function()
         vim.hl.on_yank()
     end,
@@ -30,6 +32,8 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 -- Wrap git commit message bodies at column 71 (the conventional Git limit)
 vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("user.gitcommit", { clear = true }),
+    desc = "Wrap gitcommit bodies at the conventional 71 columns",
     pattern = "gitcommit",
     callback = function()
         vim.opt_local.textwidth = 71
@@ -92,6 +96,8 @@ require("nvim-treesitter").install({
 })
 
 vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("user.treesitter", { clear = true }),
+    desc = "Start treesitter when a parser exists for the filetype",
     callback = function()
         pcall(vim.treesitter.start)
     end,
@@ -160,6 +166,8 @@ end
 -- Drop per-buffer state when the buffer goes away, so the table can't grow
 -- unbounded over a long session.
 vim.api.nvim_create_autocmd("BufDelete", {
+    group = vim.api.nvim_create_augroup("user.diagnostics", { clear = true }),
+    desc = "Drop per-buffer diagnostic severity state",
     callback = function(ev)
         warnings_hidden[ev.buf] = nil
     end,
