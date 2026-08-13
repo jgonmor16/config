@@ -93,6 +93,8 @@ require("nvim-treesitter").install({
     "python",
     "yaml",
     "toml",
+    "vhdl",
+    "systemverilog",
 })
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -149,7 +151,6 @@ vim.lsp.config("lua_ls", {
     }
 })
 
-vim.lsp.enable(lsp_names)
 vim.lsp.enable(lsp_names)
 
 -- Nvim's default LSP maps cover grn/gra/grr/gri/grt/gO/K but deliberately
