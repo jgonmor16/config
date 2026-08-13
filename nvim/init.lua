@@ -150,6 +150,34 @@ vim.lsp.config("lua_ls", {
 })
 
 vim.lsp.enable(lsp_names)
+vim.lsp.enable(lsp_names)
+
+-- Nvim's default LSP maps cover grn/gra/grr/gri/grt/gO/K but deliberately
+-- leave gd and gD as the builtin keyword searches. Override them per
+-- buffer, and only where the server answers the method, so buffers
+-- without a capable server keep the builtin behaviour.
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = vim.api.nvim_create_augroup("user.lsp", { clear = true }),
+    desc = "Map gd/gD when the attached server supports them",
+    callback = function(ev)
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if not client then
+            return
+        end
+
+        local methods = vim.lsp.protocol.Methods
+
+        if client:supports_method(methods.textDocument_definition) then
+            vim.keymap.set("n", "gd", vim.lsp.buf.definition,
+                { buffer = ev.buf, desc = "LSP: go to definition" })
+        end
+
+        if client:supports_method(methods.textDocument_declaration) then
+            vim.keymap.set("n", "gD", vim.lsp.buf.declaration,
+                { buffer = ev.buf, desc = "LSP: go to declaration" })
+        end
+    end,
+})
 
 ---------------------------------------------------------------------------
 -- Diagnostic
