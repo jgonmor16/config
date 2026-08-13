@@ -206,3 +206,13 @@ end, { expr = true, desc = "Completion: next" })
 vim.keymap.set("i", "<C-k>", function()
     return vim.fn.pumvisible() == 1 and "<C-p>" or "<C-k>"
 end, { expr = true, desc = "Completion: previous" })
+
+-- Accept the current match, or the first one if the menu opened unselected
+-- ('autocomplete' forces "noselect" on the non-LSP path; see :h 'autocomplete').
+vim.keymap.set("i", "<C-y>", function()
+    if vim.fn.pumvisible() == 0 then
+        return "<C-y>"
+    end
+    return vim.fn.complete_info({ "selected" }).selected == -1
+        and "<C-n><C-y>" or "<C-y>"
+end, { expr = true, desc = "Completion: accept (first match if none selected)" })
