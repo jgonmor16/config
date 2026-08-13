@@ -14,7 +14,9 @@ vim.o.scrolloff = 3
 vim.o.clipboard = "unnamedplus"
 vim.o.signcolumn = "yes"
 vim.o.ignorecase = true
+vim.o.smartcase = true
 vim.o.mouse = "a"
+vim.o.undofile = true
 
 -- Solve +q4D73 known glitch
 local termfeatures = vim.g.termfeatures or {}
@@ -37,6 +39,7 @@ vim.api.nvim_create_autocmd("FileType", {
     pattern = "gitcommit",
     callback = function()
         vim.opt_local.textwidth = 71
+        vim.opt_local.colorcolumn = "71"
     end,
 })
 
