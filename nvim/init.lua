@@ -187,20 +187,17 @@ end, { desc = "Toggle warning diagnostics (this buffer)" })
 ---------------------------------------------------------------------------
 -- Completion
 ---------------------------------------------------------------------------
--- Point 'omnifunc' at the LSP client so its results can be merged with other
--- sources below.
-vim.api.nvim_create_autocmd('LspAttach', {
-    callback = function(ev)
-        local client = vim.lsp.get_client_by_id(ev.data.client_id)
-        if client and client:supports_method('textDocument/completion') then
-            vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
-        end
-    end,
-})
-
+-- Core sets 'omnifunc' to the LSP client on attach, so adding "o" to
+-- 'complete' is all that's needed to merge LSP results into the other
+-- ins-completion sources.
 vim.opt.complete:append("o")
 vim.opt.completeopt = { "menu", "menuone", "noinsert", "popup" }
 vim.o.autocomplete = true
+
+-- <CR> always breaks the line, even with the menu open
+vim.keymap.set("i", "<CR>", function()
+    return vim.fn.pumvisible() == 1 and "<C-e><CR>" or "<CR>"
+end, { expr = true, desc = "Newline (never confirm completion)" })
 
 vim.keymap.set("i", "<C-j>", function()
     return vim.fn.pumvisible() == 1 and "<C-n>" or "<C-j>"
