@@ -133,7 +133,15 @@ end
 -- Ensure every tool above is actually installed, and report when the
 -- background installs finish. get_package() raises on an unknown name and
 -- install() asserts when one is already running, so both are guarded.
-mason_registry.refresh(function()
+mason_registry.refresh(function(success)
+    if not success then
+        vim.schedule(function()
+            vim.notify("Mason: registry refresh failed; see :MasonLog",
+                vim.log.levels.ERROR)
+        end)
+        return
+    end
+
     local queue = {}
 
     for _, name in ipairs(ensure_installed) do
@@ -178,15 +186,6 @@ mason_registry.refresh(function()
                 end
             end)
         end)
-    end
-end)
-
-mason_registry.refresh(function()
-    for _, name in ipairs(ensure_installed) do
-        local ok, pkg = pcall(mason_registry.get_package, name)
-        if ok and not pkg:is_installed() then
-            pkg:install()
-        end
     end
 end)
 
