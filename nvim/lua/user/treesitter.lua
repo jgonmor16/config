@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------------
 -- Treesitter
 ---------------------------------------------------------------------------
-require("nvim-treesitter").install({
+local parsers = {
     "lua",
     "vim",
     "vimdoc",
@@ -12,7 +12,8 @@ require("nvim-treesitter").install({
     "toml",
     "vhdl",
     "systemverilog",
-})
+}
+require("nvim-treesitter").install(parsers)
 
 -- Nvim detects .v as "verilog", but nvim-treesitter ships no parser under
 -- that name and parser names are assumed to equal filetype names.
@@ -26,3 +27,5 @@ vim.api.nvim_create_autocmd("FileType", {
         pcall(vim.treesitter.start)
     end,
 })
+
+return { parsers = parsers }

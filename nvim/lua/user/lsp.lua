@@ -127,3 +127,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
         end
     end,
 })
+
+return {
+    servers = servers,
+    ensure_installed = ensure_installed,
+}
