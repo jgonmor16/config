@@ -1,151 +1,129 @@
--------------------------------------------------------------------------------
--- LSP setup
--------------------------------------------------------------------------------
+---------------------------------------------------------------------------
+-- LSP
+---------------------------------------------------------------------------
+require("mason").setup()
+local mason_registry = require("mason-registry")
 
--------------------------
--- Connection function --
--------------------------
-
--- Function to run when an LSP connects to a particular buffer
-local on_attach = function(_, bufnr)
-
-  -- Custom function to easily define custom mappings for LSP related items.
-  -- It sets the mode, buffer and description each time.
-  local nmap = function(keys, func, desc)
-    if desc then
-      desc = 'LSP:' .. desc
-    end
-    vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
-  end
-
-  --------------
-  -- Keybinds --
-  --------------
-
-  nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-  nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-
-  nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
-  nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-  nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
-  nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
-  nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-  nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-
-  -- See `:help K` for why this keymap
-  nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
-
-  -- Lesser used LSP functionality
-  nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-  nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
-  nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-  nmap('<leader>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, '[W]orkspace [L]ist Folders')
-
-  -- Create ':Format' command local to the LSP buffer
-  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-    if vim.lsp.buf.format then
-      vim.lsp.buf.format()
-    elseif vim.lsp.buf.formatting then
-      vim.lsp.buf.formatting()
-    end
-  end, { desc = 'Format current buffer with LSP' })
-end
-
------------
--- Mason --
------------
--- Setup mason so it can manage external tooling
-require('mason').setup()
-
--- Enable the following language servers
-local servers = { 'pyright', 'sumneko_lua', 'clangd'}
--- TODO: Look for language servers
---local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'sumneko_lua', 'gopls' }
-
--- Ensure the servers above are installed
-require('mason-lspconfig').setup {
-  ensure_installed = servers,
+-- List of Mason and LSP servers
+local servers = {
+    { mason = "lua-language-server",  lsp = "lua_ls" },
+    { mason = "basedpyright",         lsp = "basedpyright" },
+    { mason = "ruff",                 lsp = "ruff" },
+    { mason = "taplo",                lsp = "taplo" },
+    { mason = "yaml-language-server", lsp = "yamlls" },
+    { mason = "verible",              lsp = "verible" },
+    { mason = "rust_hdl",             lsp = "vhdl_ls" },
 }
 
--------------------------------
--- nvim-cmp lsp capabilities --
--------------------------------
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
-------------
--- Attach --
-------------
-for _, lsp in ipairs(servers) do
-  require('lspconfig')[lsp].setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-  }
+-- tree-sitter-cli is not a language server (no lspconfig entry)
+local ensure_installed = { "tree-sitter-cli" }
+local lsp_names = {}
+for _, server in ipairs(servers) do
+    table.insert(ensure_installed, server.mason)
+    table.insert(lsp_names, server.lsp)
 end
 
-----------------
--- LSP status --
-----------------
-require('fidget').setup()
+-- Ensure every tool above is actually installed, and report when the
+-- background installs finish. get_package() raises on an unknown name and
+-- install() asserts when one is already running, so both are guarded.
+mason_registry.refresh(function(success)
+    if not success then
+        vim.schedule(function()
+            vim.notify("Mason: registry refresh failed; see :MasonLog",
+                vim.log.levels.ERROR)
+        end)
+        return
+    end
 
----------------------------------
--- Custom conf example for lua --
----------------------------------
+    local queue = {}
 
--- Example custom configuration for lua
---
--- Make runtime files discoverable to the server
-local runtime_path = vim.split(package.path, ';')
-table.insert(runtime_path, 'lua/?.lua')
-table.insert(runtime_path, 'lua/?/init.lua')
+    for _, name in ipairs(ensure_installed) do
+        if not mason_registry.has_package(name) then
+            vim.schedule(function()
+                vim.notify(("Mason: unknown package %q"):format(name),
+                    vim.log.levels.ERROR)
+            end)
+        else
+            local pkg = mason_registry.get_package(name)
+            if not pkg:is_installed()
+                and not pkg:is_installing()
+                and not pkg:is_uninstalling()
+            then
+                table.insert(queue, pkg)
+            end
+        end
+    end
 
-require('lspconfig').sumneko_lua.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT)
-        version = 'LuaJIT',
-        -- Setup your lua path
-        path = runtime_path,
-      },
-      diagnostics = {
-        globals = { 'vim' },
-      },
-      workspace = { library = vim.api.nvim_get_runtime_file('', true) },
-      -- Do not send telemetry data containing a randomized but unique identifier
-      telemetry = { enable = false },
-    },
-  },
-}
+    if #queue == 0 then
+        return
+    end
 
+    local remaining, failed = #queue, {}
+    for _, pkg in ipairs(queue) do
+        pkg:install(nil, function(ok)
+            if not ok then
+                table.insert(failed, pkg.name)
+            end
 
--- TODO: Update this (add hdl_checker)
---local status_ok, _ = pcall(require, "lspconfig")
---if not status_ok then
---    return
---end
---
----- Only define once
---if not require'lspconfig.configs'.hdl_checker then
---  require'lspconfig.configs'.hdl_checker = {
---    default_config = {
---    cmd = {"hdl_checker", "--lsp", };
---    filetypes = {"vhdl", "verilog", "systemverilog"};
---      root_dir = function(fname)
---        -- will look for the .hdl_checker.config file in parent directory, a
---        -- .git directory, or else use the current directory, in that order.
---        local util = require'lspconfig'.util
---        return util.root_pattern('.hdl_checker.config')(fname) or util.find_git_ancestor(fname) or util.path.dirname(fname)
---      end;
---      settings = {};
---    };
---
---  }
---end
---
---require'lspconfig'.hdl_checker.setup{}
+            remaining = remaining - 1
+            if remaining > 0 then
+                return
+            end
+
+            vim.schedule(function()
+                if #failed == 0 then
+                    vim.notify(("Mason: installed %d tool(s)"):format(#queue),
+                        vim.log.levels.INFO)
+                else
+                    vim.notify(
+                        "Mason: install failed for " .. table.concat(failed, ", ")
+                        .. " (see :Mason)",
+                        vim.log.levels.WARN)
+                end
+            end)
+        end)
+    end
+end)
+
+-- Fix 'vim' global warning
+vim.lsp.config("lua_ls", {
+    settings = {
+        Lua = {
+            workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+            }
+        }
+    }
+})
+
+vim.lsp.enable(lsp_names)
+
+vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format,
+    { desc = "Format buffer via LSP" })
+
+-- Nvim's default LSP maps cover grn/gra/grr/gri/grt/gO/K but deliberately
+-- leave gd and gD as the builtin keyword searches. Override them per
+-- buffer, and only where the server answers the method, so buffers
+-- without a capable server keep the builtin behaviour.
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = vim.api.nvim_create_augroup("user.lsp", { clear = true }),
+    desc = "Map gd/gD when the attached server supports them",
+    callback = function(ev)
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if not client then
+            return
+        end
+
+        local methods = vim.lsp.protocol.Methods
+
+        if client:supports_method(methods.textDocument_definition) then
+            vim.keymap.set("n", "gd", vim.lsp.buf.definition,
+                { buffer = ev.buf, desc = "LSP: go to definition" })
+        end
+
+        if client:supports_method(methods.textDocument_declaration) then
+            vim.keymap.set("n", "gD", vim.lsp.buf.declaration,
+                { buffer = ev.buf, desc = "LSP: go to declaration" })
+        end
+    end,
+})
