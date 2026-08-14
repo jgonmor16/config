@@ -23,3 +23,14 @@ vim.keymap.set('n', '<leader>x', '<cmd>x<CR>', { desc = "Save and close file" })
 -- visual area, so you can press < / > repeatedly to keep shifting.
 vim.keymap.set('v', '<', '<gv', { desc = "Indent left, keep selection" })
 vim.keymap.set('v', '>', '>gv', { desc = "Indent right, keep selection" })
+
+-- Windows
+vim.keymap.set('n', '<leader>n', '<cmd>vsplit<CR>',
+    { desc = "Split window vertically" })
+vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = "Go to window on the left" })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = "Go to window on the right" })
+
+-- <C-l> is Neovim's default nohlsearch + diffupdate (:help CTRL-L-default).
+-- Window navigation claims that key, so keep the behaviour on <Esc>.
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<Bar>diffupdate<CR>',
+    { desc = "Clear search highlight" })
