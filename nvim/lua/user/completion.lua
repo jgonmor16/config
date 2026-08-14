@@ -1,10 +1,12 @@
 ---------------------------------------------------------------------------
 -- Completion
 ---------------------------------------------------------------------------
--- Core sets 'omnifunc' to the LSP client on attach, so adding "o" to
--- 'complete' is all that's needed to merge LSP results into the other
--- ins-completion sources.
-vim.opt.complete:append("o")
+
+-- Core sets 'omnifunc' to the LSP client on attach, so "o" is all that is
+-- needed to merge LSP results into the other ins-completion sources. Set
+-- the full list (default is .,w,b,u,t) rather than appending, so reloading
+-- the config cannot stack duplicate flags.
+vim.opt.complete = { ".", "w", "b", "u", "t", "o" }
 vim.opt.completeopt = { "menu", "menuone", "noinsert", "popup" }
 vim.o.autocomplete = true
 

@@ -7,8 +7,15 @@
 ---------------------------------------------------------------------------
 vim.keymap.set('n', '<leader>o', function()
     vim.cmd("update")
-    vim.cmd("source %")
+    for name in pairs(package.loaded) do
+        if name == "user" or name:find("^user%.") then
+            package.loaded[name] = nil
+        end
+    end
+    vim.cmd.source(vim.env.MYVIMRC)
+    vim.notify("Config reloaded", vim.log.levels.INFO)
 end, { desc = "Save & reload config" })
+
 vim.keymap.set('n', '<leader>w', '<cmd>write<CR>', { desc = "Save file" })
 vim.keymap.set('n', '<leader>x', '<cmd>x<CR>', { desc = "Save and close file" })
 
