@@ -1,77 +1,35 @@
--------------------------------------------------------------------------------
--- cmp Setup
--------------------------------------------------------------------------------
+---------------------------------------------------------------------------
+-- Completion
+---------------------------------------------------------------------------
 
----------------------
--- Require plugins --
----------------------
-local cmp_status_ok, cmp = pcall(require, "cmp")
-if not cmp_status_ok then
-  return
-end
+-- Core sets 'omnifunc' to the LSP client on attach, so "o" is all that is
+-- needed to merge LSP results into the other ins-completion sources. Set
+-- the full list (default is .,w,b,u,t) rather than appending, so reloading
+-- the config cannot stack duplicate flags.
+vim.opt.complete = { ".", "w", "b", "u", "t", "o" }
+vim.opt.completeopt = { "menu", "menuone", "noinsert", "popup" }
+vim.o.autocomplete = true
 
-local snip_status_ok, luasnip = pcall(require, "luasnip")
-if not snip_status_ok then
-  return
-end
+-- <CR> always breaks the line, even with the menu open
+vim.keymap.set("i", "<CR>", function()
+    return vim.fn.pumvisible() == 1 and "<C-e><CR>" or "<CR>"
+end, { expr = true, desc = "Newline (never confirm completion)" })
 
-local lspkind = require "lspkind"
+-- 'autocomplete' forces "noselect" on the typing-triggered path, so the
+-- menu can open with nothing highlighted; the LSP omnifunc path honours
+-- "noinsert" and does preselect. Normalise both to "take the top match".
+vim.keymap.set("i", "<C-y>", function()
+    if vim.fn.pumvisible() == 0 then
+        return "<C-y>"
+    end
+    return vim.fn.complete_info({ "selected" }).selected == -1
+        and "<C-n><C-y>" or "<C-y>"
+end, { expr = true, desc = "Completion: accept (first match if none selected)" })
 
---------------
--- cmp conf --
---------------
-cmp.setup {
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert {
-    ["<C-k>"] = cmp.mapping.select_prev_item(),
-    ["<C-j>"] = cmp.mapping.select_next_item(),
-    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    ["<C-e>"] = cmp.mapping.close(),
-    ["<C-y>"] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace, -- Insert ?
-      select = true
-    },
-    -- Show all the posibilities
-    ["<C-Space>"] = cmp.mapping.complete(),
-  },
-  -- Sources are ordered by priority
-  sources = {
-    { name = "nvim_lua" },
-    { name = "nvim_lsp" },
-    { name = "path" },
-    { name = "luasnip" },
-    { name = "buffer", keyword_length = 3 },
-    --{ name = "gh_issues" },
-    -- Config options:
-      -- keyword_length
-      -- priority
-      -- max_item_count
-  },
-  formatting = {
-    format = function(entry, vim_item)
-      -- fancy icons and a name of kind
-      vim_item.kind = require("lspkind").presets.default[vim_item.kind] .. " " .. vim_item.kind
-      -- set a name for each source
-      vim_item.menu = ({
-        buffer = "[Buf]",
-        nvim_lsp = "[LSP]",
-        nvim_lua = "[Lua]",
-        path = "[Path]",
-        luasnip = "[LuaSnip]",
-        --gh_issues = "[issues]",
-        --latex_symbols = "[Latex]",
-      })[entry.source.name]
-      return vim_item
-    end,
-  },
-  experimental = {
-    native_menu = false,
-    ghost_text = false, -- Show ghost completion
-  },
-}
+vim.keymap.set("i", "<C-j>", function()
+    return vim.fn.pumvisible() == 1 and "<C-n>" or "<C-j>"
+end, { expr = true, desc = "Completion: next" })
 
+vim.keymap.set("i", "<C-k>", function()
+    return vim.fn.pumvisible() == 1 and "<C-p>" or "<C-k>"
+end, { expr = true, desc = "Completion: previous" })

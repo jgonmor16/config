@@ -1,57 +1,13 @@
--------------------------------------------------------------------------------
--- Plugins Configuration
--------------------------------------------------------------------------------
-
-
--------------
--- Lualine --
--------------
-require 'user.lualine'
-
---------------
--- Comments --
---------------
-require 'user.comment'
-
----------------
--- Blankline --
----------------
-require('indent_blankline').setup {
-  char = '┊',
-  show_trailing_blankline_indent = false,
-}
-
---------------
--- Gitsigns --
---------------
-require('gitsigns').setup {
-  signs = {
-  add = { text = '+' },
-  change = { text = '~' },
-  delete = { text = '_' },
-  topdelete = { text = '‾' },
-  changedelete = { text = '~' },
-  },
-}
-
----------------
--- Telescope --
----------------
-require 'user.telescope'
-
-----------------
--- Treesitter --
-----------------
-require 'user.treesitter'
-
----------
--- LSP --
----------
-require 'user.lsp'
-
-----------------
--- Completion --
-----------------
-require 'user.completion'
-
-
+---------------------------------------------------------------------------
+-- Plugins, managed by vim.pack (built in since Neovim 0.12)
+---------------------------------------------------------------------------
+vim.pack.add({
+    { src = "https://github.com/neovim/nvim-lspconfig" },
+    { src = "https://github.com/mason-org/mason.nvim" },
+    { src = "https://github.com/maxmx03/solarized.nvim" },
+    { src = "https://github.com/lewis6991/gitsigns.nvim" },
+    {
+        src = "https://github.com/nvim-treesitter/nvim-treesitter",
+        version = "main"
+    },
+})
