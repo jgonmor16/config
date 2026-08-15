@@ -1,7 +1,7 @@
 
 MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-.PHONY: nv clean
+.PHONY: nv clean check
 
 nv:
 	mkdir -p ~/.config/nvim
@@ -12,3 +12,6 @@ clean:
 	rm ~/.config/nvim/init.lua
 	rm -f ~/.config/nvim/lua
 	rm -f ~/.config/nvim/plugin
+
+check:
+	nvim --headless -c 'qa'
