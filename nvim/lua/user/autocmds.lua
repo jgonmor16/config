@@ -24,3 +24,14 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.colorcolumn = { "71" }
     end,
 })
+
+-- Web ecosystems, and Prettier in particular, assume two-space indentation.
+vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("user.indent", { clear = true }),
+    desc = "Use two-space indentation for web filetypes",
+    pattern = { "html", "css", "javascript", "typescript", "json", "jsonc" },
+    callback = function()
+        vim.opt_local.tabstop = 2
+        vim.opt_local.shiftwidth = 2
+    end,
+})
