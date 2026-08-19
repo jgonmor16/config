@@ -34,3 +34,21 @@ vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = "Go to window on the right" })
 -- Window navigation claims that key, so keep the behaviour on <Esc>.
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<Bar>diffupdate<CR>',
     { desc = "Clear search highlight" })
+
+local C_J = vim.api.nvim_replace_termcodes("<C-j>", true, false, true)
+local C_K = vim.api.nvim_replace_termcodes("<C-k>", true, false, true)
+
+local function move_selection(direction, fallback)
+    if vim.fn.mode() ~= "V" then
+        return fallback
+    end
+    if direction == "down" then
+        return ":m '>+1<CR>gv=gv"
+    end
+    return ":m '<-2<CR>gv=gv"
+end
+
+vim.keymap.set('x', '<C-j>', function() return move_selection("down", C_J) end,
+    { expr = true, desc = "Move line down (linewise visual)" })
+vim.keymap.set('x', '<C-k>', function() return move_selection("up", C_K) end,
+    { expr = true, desc = "Move line up (linewise visual)" })
