@@ -76,6 +76,14 @@ local function check_executables()
         })
     end
 
+    if vim.fn.executable("node") == 1 then
+        health.ok("node")
+    else
+        health.error("node not found", {
+            "The html, css, json and typescript servers are npm packages.",
+        })
+    end
+
     local compiler
     for _, cc in ipairs({ "cc", "gcc", "clang" }) do
         if vim.fn.executable(cc) == 1 then

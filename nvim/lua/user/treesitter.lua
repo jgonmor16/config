@@ -12,6 +12,13 @@ local parsers = {
     "toml",
     "vhdl",
     "systemverilog",
+    "html",
+    "css",
+    "javascript",
+    "typescript",
+    "tsx",
+    "json",
+    "jsdoc",
 }
 require("nvim-treesitter").install(parsers)
 

@@ -13,6 +13,14 @@ local servers = {
     { mason = "yaml-language-server", lsp = "yamlls" },
     { mason = "verible",              lsp = "verible" },
     { mason = "rust_hdl",             lsp = "vhdl_ls" },
+    { mason = "rust_hdl",             lsp = "vhdl_ls" },
+    { mason = "html-lsp",             lsp = "html" },
+    { mason = "css-lsp",              lsp = "cssls" },
+    { mason = "json-lsp",             lsp = "jsonls" },
+    {
+        mason = "typescript-language-server",
+        lsp = "ts_ls",
+    },
 }
 
 -- tree-sitter-cli is not a language server (no lspconfig entry)
