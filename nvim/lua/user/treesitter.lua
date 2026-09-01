@@ -19,6 +19,13 @@ local parsers = {
     "tsx",
     "json",
     "jsdoc",
+    "c",
+    "cpp",
+    "rust",
+    "java",
+    "kotlin",
+    "xml",
+    "groovy",
 }
 require("nvim-treesitter").install(parsers)
 
