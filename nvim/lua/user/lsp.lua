@@ -26,6 +26,7 @@ local servers = {
         mason = "typescript-language-server",
         lsp = "ts_ls",
     },
+    { mason = "bash-language-server", lsp = "bashls" },
 }
 
 -- tree-sitter-cli is not a language server (no lspconfig entry)

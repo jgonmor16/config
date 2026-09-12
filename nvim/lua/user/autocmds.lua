@@ -20,8 +20,8 @@ vim.api.nvim_create_autocmd("FileType", {
     desc = "Wrap gitcommit bodies at the conventional 71 columns",
     pattern = "gitcommit",
     callback = function()
-        vim.opt_local.textwidth = 71
-        vim.opt_local.colorcolumn = { "71" }
+        vim.opt_local.textwidth = 70
+        vim.opt_local.colorcolumn = { "70" }
     end,
 })
 
@@ -29,7 +29,7 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("user.indent", { clear = true }),
     desc = "Use two-space indentation for web filetypes",
-    pattern = { "html", "css", "javascript", "typescript", "json", "jsonc" },
+    pattern = { "html", "css", "javascript", "typescript", "json", "jsonc", "lua" },
     callback = function()
         vim.opt_local.tabstop = 2
         vim.opt_local.shiftwidth = 2
