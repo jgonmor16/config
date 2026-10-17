@@ -167,10 +167,12 @@ make zsh && exec zsh
 ### Prompt
 
 ```
-➜ [user]~/path git:(branch|action) ✗ + ?
+➜ [user] repo/subdir git:(branch|action) ✗ + ?
 ```
 
-The arrow turns red after a failing command. `✗` marks unstaged changes, `+`
+Inside a repo the path starts at the repo root; outside it is relative to
+`~` when under it, otherwise absolute. The arrow turns red after a failing
+command. `✗` marks unstaged changes, `+`
 staged changes and `?` untracked files; `action` appears only during a
 rebase, merge or similar.
 
