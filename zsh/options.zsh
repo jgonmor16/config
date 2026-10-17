@@ -10,6 +10,9 @@ setopt hist_ignore_space
 setopt hist_reduce_blanks
 setopt hist_verify
 
+# oh-my-zsh set this; ls and completion colors read it.
+[[ -z $LS_COLORS ]] && (( $+commands[dircolors] )) && eval "$(dircolors -b)"
+
 setopt auto_cd
 setopt auto_pushd pushd_ignore_dups pushd_silent
 setopt interactive_comments
