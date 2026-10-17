@@ -1,4 +1,3 @@
-
 MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: nv zsh clean check

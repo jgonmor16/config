@@ -12,8 +12,6 @@ export ZDOTDIR=${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}
 skip_global_compinit=1
 
 export EDITOR=nvim VISUAL=nvim
-# Skips Nvim's startup terminal queries; 'background' is set in config.
-export NVIM_NOTTYFAST=1
 
 typeset -U path
 path=(

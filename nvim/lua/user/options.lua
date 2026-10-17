@@ -20,8 +20,3 @@ vim.o.undofile = true
 
 vim.o.termguicolors = true
 vim.o.background = "dark"
-
--- Solve +q4D73 known glitch
-local termfeatures = vim.g.termfeatures or {}
-termfeatures.osc52 = false
-vim.g.termfeatures = termfeatures

@@ -1,4 +1,4 @@
-# Interactive setup. Order matters: plugins.zsh, once added, goes last.
+# Interactive setup. Order matters: plugins.zsh goes last.
 for _mod in options completion keybinds prompt aliases plugins; do
     source $ZDOTDIR/$_mod.zsh
 done
